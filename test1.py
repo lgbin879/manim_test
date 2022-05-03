@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-#from manimlib.imports import *
-#from manimlib.scene.scene import Scene
 from manim import *
+#  config.background_color = WHITE
+#  config["background_color"] = WHITE
 
 class Shoot(Scene):
     """Shoot test"""
@@ -63,13 +63,13 @@ class LoveDeathRobots(Scene):
         circle02.shift(np.array([0.5, 0.5, 0]))
         square01 = Square(color=RED, fill_color=RED, fill_opacity=0.5)
         square01.scale(0.99)
-        square01.rotate(-3*TAU/8)
+        square01.rotate(np.pi/4)
         heart = VGroup(circle01, circle02, square01)
 
         rec01 = Rectangle(color=RED, width=4, height=1, fill_color=RED, fill_opacity=0.5)
-        rec01.rotate(3*TAU/8)
+        rec01.rotate(np.pi/4)
         rec02 = Rectangle(color=RED, width=4, height=1, fill_color=RED, fill_opacity=0.5)
-        rec02.rotate(-3*TAU/8)
+        rec02.rotate(-np.pi/4)
         cross = VGroup(rec01, rec02)
 
         square02 = Square(color=RED, fill_color=RED, fill_opacity=0.5)
@@ -113,16 +113,23 @@ class LoveDeathRobots(Scene):
         self.play(Transform(line01, title))
         self.wait(2)
 
-        self.play(VGroup(heart, cross, ghost, namespace).animate.shift(np.array([0,1,0])))
+        self.play(VGroup(heart, cross, ghost, namespace).animate.shift(np.array([0,1,0])), run_time=2)
         self.wait(2)
 
 
 class HelloWorld(Scene):
     def construct(self):
-        text = Text("你好Hello world", font_size=144)
+        print(manimpango.list_fonts())
+        text = Text("Hello world", font_size=144)
         self.add(text)
         self.wait(2)
    
+
+class LaTeXTemplateLibrary(Scene):
+    def construct(self):
+        tex = Tex('Hello 你好 ', tex_template=TexTemplateLibrary.ctex, font_size=144)
+        self.add(tex)
+        self.wait(2)
 
 # 设置文本大小
 class Demo2(Scene):
@@ -168,3 +175,11 @@ class HelloManim(Scene):
         self.play(Transform(helloworld, hellomanim))
         self.wait(1)
 
+class DifferentRotations(Scene):
+    def construct(self):
+        left_square = Square(color=BLUE, fill_opacity=0.7).shift(2 * LEFT)
+        right_square = Square(color=GREEN, fill_opacity=0.7).shift(2 * RIGHT)
+        self.play(
+                left_square.animate.rotate(PI/2), Rotate(right_square, angle=PI), run_time=2
+                )
+        self.wait()
