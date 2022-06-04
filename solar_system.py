@@ -9,7 +9,7 @@ from manim import *
 class SunEarth(Scene):
     """Sun and Earth"""
     def construct(self):
-
+        #  self.camera.background_color = "#ece6e2"
         ## Make objects
         quote = Tex('这是我的第一个Manim作品', 
                     tex_template=TexTemplateLibrary.ctex, 
@@ -42,8 +42,8 @@ class SunEarth(Scene):
         emsystem = VGroup(earth, rail_moon, moon)
 
         ## Shift position
-        moon.shift(np.array([0.49, 0, 0]))
-        emsystem.shift(np.array([3.5, 0, 0]))
+        emsystem.move_to(rail_earth.point_from_proportion(0))
+        moon.move_to(rail_moon.point_from_proportion(0))
         #  emsystem.align_to(rail_earth)
 
         ## Show objects
@@ -60,13 +60,15 @@ class SunEarth(Scene):
         self.play(FadeIn(moon))
         self.wait(1)
 
+        #  moon.add_updater(lambda a : a.next_to(earth, buff=1))
         self.play(
                 Rotate(emsystem, angle=2*PI, about_point=ORIGIN, rate_func=linear),
+                #  Rotate(moon, angle=4*PI, about_point=earth.get_center(), rate_func=linear),
                 MoveAlongPath(moon, rail_moon),
                 run_time=15, rate_func=linear
                 )
         self.play(
-                Rotate(emsystem, angle=2*PI, about_point=ORIGIN, rate_func=linear),
+                Rotate(emsystem, angle=8*PI, about_point=ORIGIN, rate_func=linear),
                 MoveAlongPath(moon, rail_moon),
                 #  always_redraw(lambda : ApplyMethod(moon.rotate, 4*PI)), #not work
                 run_time=15, rate_func=linear

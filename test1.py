@@ -175,11 +175,102 @@ class HelloManim(Scene):
         self.play(Transform(helloworld, hellomanim))
         self.wait(1)
 
+
 class DifferentRotations(Scene):
     def construct(self):
         left_square = Square(color=BLUE, fill_opacity=0.7).shift(2 * LEFT)
         right_square = Square(color=GREEN, fill_opacity=0.7).shift(2 * RIGHT)
+
+        left_square.save_state()
+        right_square.save_state()
+
         self.play(
                 left_square.animate.rotate(PI/2), Rotate(right_square, angle=PI), run_time=2
                 )
         self.wait()
+        
+        self.play(AnimationGroup(
+            left_square.animate(rate_func=there_and_back).to_corner(DL).rotate(PI/2), 
+            right_square.animate(rate_func=there_and_back).to_corner(UR).rotate(PI/2)), 
+            run_time = 2,
+            lag_ratio=0.15)
+        self.wait(1)
+        self.play(Restore(left_square), Restore(right_square), run_time=1)
+        self.wait(1)
+
+
+class UpdaterExample(Scene):
+    """docstring for UpdaterExample"""
+    def construct(self):
+        ## Make objects
+        dot = Dot().shift(2*LEFT)
+        text = Text("hello manim").next_to(dot, RIGHT)
+        self.add(dot, text)
+
+        ## Set positions
+        self.play(
+                dot.animate(rate_func=there_and_back).shift(UP*2),
+                run_time=2)
+        self.wait(1)
+
+        text.add_updater(lambda a: a.next_to(dot, RIGHT))
+        self.play(
+                dot.animate(rate_func=there_and_back).shift(UP*2),
+                run_time=2)
+        self.wait(1)
+
+        ## Show objects
+
+
+from colour import Color
+class BasicAnimations(Scene):
+    def construct(self):
+        polys = VGroup(
+                [RegularPolygon(5, radius=1, 
+                    color=Color(hue=j/5, saturation=1, luminance=0.5), fill_opacity=0.5)
+                    for j in range(5)]
+        ).arrange(RIGHT)
+        self.play(DrawBorderThenFill(polys), run_time=2)
+        self.play(
+            Rotate(polys[0], PI, rate_func=lambda t: t), # rate_func=linear
+            Rotate(polys[1], PI, rate_func=smooth),  # default behavior for most animations
+            Rotate(polys[2], PI, rate_func=lambda t: np.sin(t*PI)),
+            Rotate(polys[3], PI, rate_func=there_and_back),
+            Rotate(polys[4], PI, rate_func=lambda t: 1 - abs(1-2*t)),
+            run_time=2
+        )
+        self.wait()
+
+class LaggingGroup(Scene):
+    def construct(self):
+        squares = VGroup(*[Square(color=Color(hue=j/20, saturation=1, luminance=0.5), 
+	    fill_opacity=0.8) for j in range(20)])
+        squares.arrange_in_grid(4, 5).scale(0.75)
+        self.play(AnimationGroup(*[FadeIn(s) for s in squares], lag_ratio=0.15))
+
+
+class AxeMovingDot(Scene):
+    """docstring for AxeMovingDot"""
+    def construct(self):
+
+        ## Make objects
+        ax = Axes(x_range=[-3,3], y_range=[0,9])
+        def func(x):
+            return x**2
+        parabolo = ax.plot(func, color=YELLOW)
+
+        t = ValueTracker(-3)
+        initial_point = [ax.coords_to_point(t.get_value(), func(t.get_value()))]
+        dot = Dot(color=RED, point=initial_point)
+        dot.add_updater(lambda x: x.move_to(ax.c2p(t.get_value(), func(t.get_value()))))
+
+        ## Set positions
+
+        ## Show objects
+        self.add(ax, parabolo)
+        #  print(parabolo.get_left(), parabolo.get_right())
+        self.add(dot)
+        self.play(FadeIn(dot))
+        self.play(t.animate(rate_func=there_and_back).set_value(3), run_time=5)
+        self.wait()
+
